@@ -1,0 +1,4 @@
+AICS_WebBackend.exe
+AICS_WebBackend
+vendor/
+Gopkg.lock
