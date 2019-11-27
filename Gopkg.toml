@@ -27,7 +27,7 @@
 
 [[constraint]]
   name = "github.com/labstack/echo"
-  version = "4.1.11"
+  version = "3.1.0"
 
 [prune]
   go-tests = true
