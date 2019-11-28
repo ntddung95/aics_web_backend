@@ -11,3 +11,6 @@ func UserRegister(user, password, permission string)(success bool, err error){
 	success, err = database.UserRegister(user, password, permission)
 	return success, err
 }
+func UserChangePass(user, oldpass, newpass string) error {
+	return database.UserChangePass(user, oldpass, newpass)
+}

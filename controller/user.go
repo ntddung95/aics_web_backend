@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
+	logger "github.com/sirupsen/logrus"
 )
 
 // UserLogin UserLogin
@@ -73,4 +74,26 @@ func UserRegister(c echo.Context) error {
 	}
 	responseInfo := ResponseUser{StatusCode: 200, Data: "OK"}
         return c.JSON(http.StatusOK, responseInfo)
+}
+
+func UserChangePass(c echo.Context) error {
+	user := c.Param("username")
+	logger.Debug("User: ", user)
+	m := echo.Map{}
+	if err := c.Bind(&m); err != nil {
+		return c.JSON(http.StatusBadRequest, ResponseUser{StatusCode:9999, Data: err.Error()})
+	}
+	if m["oldpass"] == nil || m["newpass"] == nil {
+		response := ResponseUser{StatusCode: 9999, Data: "Body invalid"}
+		return c.JSON(http.StatusBadRequest, response)
+	}
+	oldpass := fmt.Sprintf("%v", m["oldpass"])
+	newpass := fmt.Sprintf("%v", m["newpass"])
+
+	err := services.UserChangePass(user, oldpass, newpass)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, ResponseUser{StatusCode:9999, Data: err.Error()})
+	}
+	return c.JSON(http.StatusOK, ResponseUser{StatusCode: 200, Data: "OK"})
 }

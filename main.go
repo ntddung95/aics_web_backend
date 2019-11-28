@@ -24,6 +24,8 @@ func main() {
 	// user
 	e.POST("/api/aicsweb/v1/user/login", controller.LoginUser)
 	e.POST("/api/aicsweb/v1/user/register", controller.UserRegister)
+	e.PUT("/api/aicsweb/v1/user/info/:username", controller.UserChangePass)
 
+	//e.Logger.Fatal(e.Start("0.0.0.0:9001"))
 	e.Logger.Fatal(e.Start("0.0.0.0:9000"))
 }

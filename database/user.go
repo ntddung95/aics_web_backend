@@ -16,6 +16,7 @@ var client *mongo.Client
 
 func init() {
 	logger.Debug("Init mongodb")
+	//clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	clientOptions := options.Client().ApplyURI("mongodb://mongo:27017")
 	client, _ = mongo.Connect(context.TODO(), clientOptions)
 
@@ -75,4 +76,23 @@ func UserRegister(user, password, permission string)(success bool, err error){
 		return false, err
 	}
 	return true, nil
+}
+
+func UserChangePass(user, oldpass, newpass string) error {
+	res_user, err := getUser(user)
+	if err != nil{
+		return errors.New("User not existed")
+	}
+	logger.Debug(res_user.Password)
+	if oldpass != res_user.Password {
+		return errors.New("Old pass not match")
+	}
+	collection := client.Database("aics_web").Collection("user")
+	filter := bson.M{"user":user}
+	update := bson.M{"$set": bson.M{"password":newpass}}
+	_, err = collection.UpdateOne(context.TODO(),filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
 }
