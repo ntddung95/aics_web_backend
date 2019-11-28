@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"errors"
 
 	logger "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,7 +16,7 @@ var client *mongo.Client
 
 func init() {
 	logger.Debug("Init mongodb")
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://mongo:27017")
 	client, _ = mongo.Connect(context.TODO(), clientOptions)
 
 	err := client.Ping(context.TODO(), nil)
@@ -35,21 +36,43 @@ type UserLogin struct {
 	Permission string `json:"permission"`
 }
 
+func getUser(user string)(result UserLogin, err error){
+        collection := client.Database("aics_web").Collection("user")
+        logger.Debug("User: ", user)
+        filter := bson.D{{"user", user}}
+        err = collection.FindOne(context.TODO(), filter).Decode(&result)
+        if err != nil {
+                logger.Error(err.Error())
+                return result, err
+        }
+	return result, nil
+}
 // LoginUser get user info from mongodb
 func LoginUser(user, password string) (success bool, permission string) {
 	logger.SetLevel(logger.DebugLevel)
-	var result UserLogin
-	collection := client.Database("aics_web").Collection("user")
-	logger.Debug("User: ", user)
-	filter := bson.D{{"user", user}}
-	err := collection.FindOne(context.TODO(), filter).Decode(&result)
+	result, err := getUser(user)
 	if err != nil {
 		logger.Error(err.Error())
 		return false, ""
 	}
+	logger.Debug("Result: ",result)
 	if result.Password == password {
 		return true, result.Permission
 	}
 	return false, ""
 
+}
+
+func UserRegister(user, password, permission string)(success bool, err error){
+	_, err = getUser(user)
+	if err == nil{
+		return false, errors.New("User existed")
+	}
+	collection := client.Database("aics_web").Collection("user")
+	new_user := bson.M{"user":user, "password":password, "permission":permission}
+	_, err = collection.InsertOne(context.TODO(), new_user)
+	if err != nil{
+		return false, err
+	}
+	return true, nil
 }

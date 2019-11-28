@@ -1,0 +1,22 @@
+version: '3'
+services:
+  mongo:
+    image: "mongo:3.4.23-xenial"
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - "/home3/DATA/DUNG/mongo/:/data/db"
+    networks:
+      - aics_backend_net
+  web_backend:
+    image: "ubuntu:16.04"
+    ports:
+      - "127.0.0.1:9000:9000"
+    volumes:
+      - "./backend:/Works"
+    networks:
+      - aics_backend_net
+    command: /Works/AICS_WebBackend
+networks:
+  aics_backend_net:
+    driver: bridge

@@ -23,6 +23,7 @@ func main() {
 
 	// user
 	e.POST("/api/aicsweb/v1/user/login", controller.LoginUser)
+	e.POST("/api/aicsweb/v1/user/register", controller.UserRegister)
 
-	e.Logger.Fatal(e.Start("127.0.0.1:9000"))
+	e.Logger.Fatal(e.Start("0.0.0.0:9000"))
 }
