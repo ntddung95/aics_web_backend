@@ -37,7 +37,7 @@ func SysFileDownload(c echo.Context) error {
 		response := ResponseUser{StatusCode: 9997, Data: err.Error()}
                 return c.JSON(http.StatusBadRequest, response)
 	}
-	return c.File(file_path)
+	return c.File("/home2/nginx/" + file_path)
 
 }
 
