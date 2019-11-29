@@ -14,6 +14,7 @@ services:
       - "127.0.0.1:9000:9000"
     volumes:
       - "./backend:/Works"
+      - "/home2/nginx:/home2/nginx"
     networks:
       - aics_backend_net
     command: /Works/AICS_WebBackend

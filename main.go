@@ -26,6 +26,10 @@ func main() {
 	e.POST("/api/aicsweb/v1/user/register", controller.UserRegister)
 	e.PUT("/api/aicsweb/v1/user/info/:username", controller.UserChangePass)
 
+	// File and folder
+	e.GET("/api/aicsweb/v1/files/list", controller.SysFileGetList)
+	e.POST("/api/aicsweb/v1/files/download", controller.SysFileDownload)
+
 	//e.Logger.Fatal(e.Start("0.0.0.0:9001"))
 	e.Logger.Fatal(e.Start("0.0.0.0:9000"))
 }
