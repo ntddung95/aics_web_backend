@@ -3,11 +3,51 @@ package main
 import (
 	"AICS_WebBackend/controller"
 	"fmt"
+	"io"
+	"os"
 	"net/http"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	log "github.com/sirupsen/logrus"
 )
+func upload(c echo.Context) error {
+	// Read form fields
+	name := "XXX"
+	email := "YYY"
+	absolute_path := c.FormValue("path")
+	//-----------
+	// Read file
+	//-----------
+
+	// Source
+	file, err := c.FormFile("file")
+	if err != nil {
+		panic(err)
+		return err
+	}
+	src, err := file.Open()
+	if err != nil {
+		panic(err)
+		return err
+	}
+	defer src.Close()
+
+	// Destination
+	dst, err := os.Create(absolute_path + "/" + file.Filename)
+	if err != nil {
+		panic(err)
+		return err
+	}
+	defer dst.Close()
+
+	// Copy
+	if _, err = io.Copy(dst, src); err != nil {
+		panic(err)
+		return err
+	}
+
+	return c.HTML(http.StatusOK, fmt.Sprintf("<p>File %s uploaded successfully with fields name=%s and email=%s.</p>", file.Filename, name, email))
+}
 
 func main() {
 	log.SetLevel(log.DebugLevel)
@@ -29,7 +69,7 @@ func main() {
 	// File and folder
 	e.GET("/api/aicsweb/v1/files/list", controller.SysFileGetList)
 	e.POST("/api/aicsweb/v1/files/download", controller.SysFileDownload)
-
+	e.POST("/api/aicsweb/v1/files/upload", controller.SysFileUpload)
 	//e.Logger.Fatal(e.Start("0.0.0.0:9001"))
 	e.Logger.Fatal(e.Start("0.0.0.0:9000"))
 }

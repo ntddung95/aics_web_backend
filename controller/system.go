@@ -40,3 +40,25 @@ func SysFileDownload(c echo.Context) error {
 	return c.File(file_path)
 
 }
+
+func SysFileUpload(c echo.Context) error {
+	absolute_path := c.FormValue("path")
+	err := services.SysCheckUploadPath(absolute_path)
+	if err != nil {
+		response := ResponseUser{StatusCode: 9997, Data: err.Error()}
+                return c.JSON(http.StatusBadRequest, response)
+	}
+	file, err := c.FormFile("file")
+	if err != nil {
+		response := ResponseUser{StatusCode: 9997, Data: err.Error()}
+                return c.JSON(http.StatusBadRequest, response)
+	}
+	err = services.SysFileUpload(absolute_path, file)
+	if err != nil {
+		response := ResponseUser{StatusCode: 9997, Data: err.Error()}
+                return c.JSON(http.StatusBadRequest, response)
+	}
+	response := ResponseUser{StatusCode: 9999, Data: "OK"}
+	return c.JSON(http.StatusOK, response)
+
+}
