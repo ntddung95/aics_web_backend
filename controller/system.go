@@ -58,7 +58,7 @@ func SysFileUpload(c echo.Context) error {
 		response := ResponseUser{StatusCode: 9997, Data: err.Error()}
                 return c.JSON(http.StatusBadRequest, response)
 	}
-	response := ResponseUser{StatusCode: 9999, Data: "OK"}
+	response := ResponseUser{StatusCode: 200, Data: "OK"}
 	return c.JSON(http.StatusOK, response)
 
 }
